@@ -73,6 +73,6 @@ MAE in test dataset:  0.0600170250318
 LOSS (MSE) in test dataset 0.0179578544099
 ```
 
-# Acknoledge
+# ACKNOWLEDGEMENTS
 
 Thanks to [Sully Chen](https://github.com/SullyChen) for the dataset.
