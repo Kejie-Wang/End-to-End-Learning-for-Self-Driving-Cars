@@ -34,6 +34,10 @@ class Nivdia_Model:
         # summary first 10 images
         tf.summary.image('input', images, 10)
 
+        with tf.name_scope('batch_norm'):
+            mean, variance = tf.nn.moments(images, axes=[0, 1, 2])
+            norm_images = tf.nn.batch_normalization(images, mean, variance, None, None, 1e-4)
+
         # first convolutional layer
         # 3@66x200 ===> 24@31x98
         with tf.name_scope('conv1') as scope:
@@ -43,7 +47,7 @@ class Nivdia_Model:
             with tf.name_scope('bias'):
                 bias = _bias_variable('bias', [24])
                 _variable_summaries(bias)
-            h_conv1 = tf.nn.relu(_conv2d(images, kernel, 2) + bias)
+            h_conv1 = tf.nn.relu(_conv2d(norm_images, kernel, 2) + bias)
 
         # second convolutional layer
         # 24@31x98 ===> 36@14x47
