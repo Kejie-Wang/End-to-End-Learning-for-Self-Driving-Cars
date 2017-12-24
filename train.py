@@ -9,12 +9,17 @@ import reader
 FLAGS = None
 
 
-def batch_eval(target, data, x_image, y, batch_size, sess):
+def batch_eval(target, data, x_image, y, keep_prob, batch_size, sess):
     value = 0
     batch_num = (data.num_expamles + batch_size - 1) // batch_size
     for i in range(batch_num):
         batch_x, batch_y = data.next_batch(batch_size, shuffle=False)
-        res = sess.run(target, feed_dict={x_image: batch_x, y: batch_y})
+        res = sess.run(
+            target, feed_dict={
+                x_image: batch_x,
+                y: batch_y,
+                keep_prob: 1.0
+            })
         value += res * len(batch_x)
 
     return value / data.num_expamles
@@ -23,8 +28,9 @@ def batch_eval(target, data, x_image, y, batch_size, sess):
 def train():
     x_image = tf.placeholder(tf.float32, [None, 66, 200, 3])
     y = tf.placeholder(tf.float32, [None, 1])
+    keep_prob = tf.placeholder(tf.float32)
 
-    model = Nivdia_Model(x_image, y, FLAGS)
+    model = Nivdia_Model(x_image, y, keep_prob, FLAGS)
 
     # dataset reader
     dataset = reader.Reader(FLAGS.data_dir, FLAGS)
@@ -40,14 +46,15 @@ def train():
 
         min_validation_loss = float('Inf')
         # restore model
-        path = tf.train.latest_checkpoint(FLAGS.model_dir)
-        if not (path is None):
-            saver.restore(sess, path)
-            # validation
-            min_validation_loss = batch_eval(model.loss, dataset.validation,
-                                             x_image, y, FLAGS.batch_size,
-                                             sess)
-            print('Restore model from', path)
+        if not FLAGS.disable_restore:
+            path = tf.train.latest_checkpoint(FLAGS.model_dir)
+            if not (path is None):
+                saver.restore(sess, path)
+                # validation
+                min_validation_loss = batch_eval(
+                    model.loss, dataset.validation, x_image, y, keep_prob,
+                    FLAGS.batch_size, sess)
+                print('Restore model from', path)
 
         for i in range(FLAGS.max_steps):
             batch_x, batch_y = dataset.train.next_batch(FLAGS.batch_size)
@@ -59,7 +66,8 @@ def train():
                 summary, _ = sess.run(
                     [merged, model.optimization],
                     feed_dict={x_image: batch_x,
-                               y: batch_y},
+                               y: batch_y,
+                               keep_prob: 0.8},
                     options=run_options,
                     run_metadata=run_metadata)
                 train_writer.add_run_metadata(run_metadata, 'step%03d' % i)
@@ -68,35 +76,31 @@ def train():
                     [merged, model.optimization],
                     feed_dict={
                         x_image: batch_x,
-                        y: batch_y
+                        y: batch_y,
+                        keep_prob: 0.8
                     })
             train_writer.add_summary(summary, i)
 
             # validation
             validation_loss = batch_eval(model.loss, dataset.validation,
-                                         x_image, y, FLAGS.batch_size, sess)
+                                         x_image, y, keep_prob,
+                                         FLAGS.batch_size, sess)
             if (validation_loss < min_validation_loss):
                 min_validation_loss = validation_loss
                 saver.save(sess, os.path.join(FLAGS.model_dir, "model.ckpt"))
 
             if i % FLAGS.print_steps == 0:
                 loss = sess.run(
-                    model.loss, feed_dict={
+                    model.loss,
+                    feed_dict={
                         x_image: batch_x,
-                        y: batch_y
+                        y: batch_y,
+                        keep_prob: 1.0
                     })
                 print("Step", i, "train_loss: ", loss, "validation_loss: ",
                       validation_loss)
 
         train_writer.close()
-
-        # test
-        test_mae = batch_eval(model.mae, dataset.test, x_image, y,
-                              FLAGS.batch_size, sess)
-        test_loss = batch_eval(model.loss, dataset.test, x_image, y,
-                               FLAGS.batch_size, sess)
-        print("MAE in test dataset: ", test_mae)
-        print("LOSS (MSE) in test dataset", test_loss)
 
 
 def main():
@@ -143,21 +147,6 @@ if __name__ == '__main__':
         type=str,
         default=os.path.join('.', 'saved_model'),
         help='Directory of saved model')
-    parser.add_argument(
-        '--seed',
-        type=str,
-        default=0,
-        help='random seed to generate train, validation and test set')
-    parser.add_argument(
-        '--train_prop',
-        type=float,
-        default=0.8,
-        help='The proportion of train set in all data')
-    parser.add_argument(
-        '--validation_prop',
-        type=float,
-        default=0.1,
-        help='The proportion of validation set in all data')
     parser.add_argument(
         '--disable_restore',
         type=int,

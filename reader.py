@@ -1,7 +1,5 @@
-import cv2
 import numpy as np
 import os
-import random
 
 
 class Dataset:
@@ -73,69 +71,20 @@ class Dataset:
 
 class Reader:
     def __init__(self, data_dir, config):
-        def _read_an_image(filename):
-            img = cv2.imread(filename)
-            img = cv2.resize(img[-150:], (200, 66))
-            # BGR space to YUV space
-            img = cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
-            return img
+        train_filename = os.path.join(data_dir, "train.npy")
+        validation_filename = os.path.join(data_dir, "validation.npy")
+        test_filename = os.path.join(data_dir, "test.npy")
 
-        def _read_all_data(data_dir):
-            images_filename = os.path.join(data_dir, "images.npy")
-            labels_filename = os.path.join(data_dir, "labels.npy")
-            if os.path.exists(images_filename) and os.path.exists(
-                    labels_filename):
-                images = np.load(images_filename)
-                labels = np.load(labels_filename)
-            else:
-                filenames = []
-                labels = []
-
-                data_filename = os.path.join(data_dir, 'data.txt')
-                with open(data_filename) as fp:
-                    for line in fp:
-                        filename, label = line.split()
-                        filenames.append(os.path.join(data_dir, filename))
-                        labels.append([float(label) * np.pi / 180])
-                images = list(map(_read_an_image, filenames))
-                labels = np.array(labels)
-                # save the data
-                np.save(images_filename, images)
-                np.save(labels_filename, labels)
-
-            return images, labels
-
-        def _split_dataset(images, labels, train_prop, validation_prop, seed):
-            data = list(zip(images, labels))
-
-            # Random shuffle the data with specific seed for split the dataset
-            # It makes sure that each time the split is same
-            # You can pass and different seed for a different split
-            random.seed(config.seed)
-            random.shuffle(data)
-
-            num_train = int(len(data) * config.train_prop)
-            num_validation = int(len(data) * config.validation_prop)
-            num_test = len(data) - num_train - num_validation
-
-            # split the data
-            train_data = data[:num_train]
-            validation_data = data[num_train:num_train + num_validation]
-            test_data = data[-num_test:]
-
-            return train_data, validation_data, test_data
-
-        images, labels = _read_all_data(data_dir)
-
-        if config.train_prop + config.validation_prop >= 1:
+        if os.path.exists(train_filename) and os.path.exists(
+                validation_filename) and os.path.exists(test_filename):
+            train_data = np.load(train_filename)
+            validation_data = np.load(validation_filename)
+            test_data = np.load(test_filename)
+        else:
             print(
-                'Error params: the sum of train and validation proportion can NOT larger than 1.0'
+                "Data does NOT exist, please check directory if exists and run split_dataset.py before train."
             )
-            exit(1)
-
-        train_data, validation_data, test_data = _split_dataset(
-            images, labels, config.train_prop, config.validation_prop,
-            config.seed)
+            exit(0)
 
         train_images, train_labels = zip(*train_data)
         self._train = Dataset(train_images, train_labels)
@@ -153,7 +102,7 @@ class Reader:
     @property
     def validation(self):
         return self._validation
-    
+
     @property
     def test(self):
         return self._test
