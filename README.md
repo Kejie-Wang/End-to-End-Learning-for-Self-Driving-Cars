@@ -11,17 +11,32 @@ This project is a tensorflow implementation of [End to End Learning for Self-Dri
 ## Howto
 
 - Download the [dataset](https://drive.google.com/file/d/0B-KJCaaF7elleG1RbzVPZWV4Tlk/view?usp=sharing)
-- Train the model: `python train.py`
-- Customize your params: `python train.py -h`
+- Split the dataset: `python split_data.py`
 
 ```shell
-% python train.py --help
+✗ python split_data.py -h
+usage: split_data.py [-h] [--data_dir DATA_DIR] [--seed SEED]
+                     [--train_prop TRAIN_PROP]
+                     [--validation_prop VALIDATION_PROP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data_dir DATA_DIR   Directory of data
+  --seed SEED           random seed to generate train, validation and test set
+  --train_prop TRAIN_PROP
+                        The proportion of train set in all data
+  --validation_prop VALIDATION_PROP
+                        The proportion of validation set in all data
+```
+
+- Train the model: `python train.py`
+
+```shell
+✗ python train.py -h
 usage: train.py [-h] [--max_steps MAX_STEPS] [--print_steps PRINT_STEPS]
                 [--learning_rate LEARNING_RATE] [--batch_size BATCH_SIZE]
                 [--data_dir DATA_DIR] [--log_dir LOG_DIR]
-                [--model_dir MODEL_DIR] [--seed SEED]
-                [--train_prop TRAIN_PROP] [--validation_prop VALIDATION_PROP]
-                [--disable_restore DISABLE_RESTORE]
+                [--model_dir MODEL_DIR] [--disable_restore DISABLE_RESTORE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -37,16 +52,25 @@ optional arguments:
   --log_dir LOG_DIR     Directory of log
   --model_dir MODEL_DIR
                         Directory of saved model
-  --seed SEED           random seed to generate train, validation and test set
-  --train_prop TRAIN_PROP
-                        The proportion of train set in all data
-  --validation_prop VALIDATION_PROP
-                        The proportion of validation set in all data
   --disable_restore DISABLE_RESTORE
                         Whether disable restore model from model directory
 ```
 
 - Visualize your training procedure: `tensorboard --logdir=./logs`
+- Test on the test set: `python test.py`
+
+```shell
+✗ python test.py -h
+usage: test.py [-h] [--data_dir DATA_DIR] [--model_dir MODEL_DIR]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data_dir DATA_DIR   Directory of data
+  --model_dir MODEL_DIR
+                        Directory of saved model
+```
+
+
 
 ## Training Results
 
@@ -61,16 +85,8 @@ The training loss:
 The test results:
 
 ```shell
-Step 19200 train_loss:  0.0011946 validation_loss:  0.020691916285
-Step 19300 train_loss:  0.000958753 validation_loss:  0.0227594176463
-Step 19400 train_loss:  0.000808717 validation_loss:  0.0229436717168
-Step 19500 train_loss:  0.000825631 validation_loss:  0.0214564389168
-Step 19600 train_loss:  0.000872765 validation_loss:  0.0209440819074
-Step 19700 train_loss:  0.000964281 validation_loss:  0.0220138165066
-Step 19800 train_loss:  0.000996914 validation_loss:  0.0217930443876
-Step 19900 train_loss:  0.000687053 validation_loss:  0.0206206155436
-MAE in test dataset:  0.0600170250318
-LOSS (MSE) in test dataset 0.0179578544099
+Loss (MSE) in test dataset: 0.016554169347
+MAE in test dataset:  0.0626648643461
 ```
 
 # ACKNOWLEDGEMENTS
