@@ -203,11 +203,7 @@ class Nivdia_Model:
                 h_conv1_mask, tf.ones([5, 5, 1, 1]), 2,
                 tf.stack([self._batch_size, 66, 200, 1]))
 
-        with tf.name_scope('output_transpose'):
-            output = h_conv1_transpose - tf.reduce_min(h_conv1_transpose)
-            output = output / tf.reduce_max(output)
-
-        return output
+        return h_conv1_transpose
 
     def __init__(self, data, target, keep_prob, config, is_train=True):
         self._batch_size = tf.shape(data)[0]
@@ -235,7 +231,7 @@ class Nivdia_Model:
         return self._prediction
 
     @property
-    def visulization_mask(self):
+    def visualization_mask(self):
         return self._visualization_mask
 
     @property
