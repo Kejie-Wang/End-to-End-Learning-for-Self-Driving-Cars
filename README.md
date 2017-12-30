@@ -1,7 +1,7 @@
 # End-to-End-Learning-for-Self-Driving-Cars
 ## Introduction
 
-This project is a tensorflow implementation of [End to End Learning for Self-Driving Cars](https://arxiv.org/abs/1604.07316). It trains an convolutional neural network (CNN) to learn a map from raw images to sterring command.
+This project is a tensorflow implementation of [End to End Learning for Self-Driving Cars](https://arxiv.org/abs/1604.07316). It trains an convolutional neural network (CNN) to learn a map from raw images to sterring command. And it implements a method called [VisualBackProp](https://arxiv.org/abs/1611.05418) to visualize the contribution of each pixel of the input image.
 
 ## Requirements
 
@@ -70,6 +70,25 @@ optional arguments:
                         Directory of saved model
 ```
 
+- Find the salient objects
+
+```shell
+✗ python visulization.py -h
+usage: visualization.py [-h] [--model_dir MODEL_DIR] [--data_dir DATA_DIR]
+                        [--result_dir RESULT_DIR]
+                        [--visualization_num VISUALIZATION_NUM]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --model_dir MODEL_DIR
+                        Directory of saved model
+  --data_dir DATA_DIR   Directory of data
+  --result_dir RESULT_DIR
+                        Directory of visualization result
+  --visualization_num VISUALIZATION_NUM
+                        The image number of visualization
+```
+
 
 
 ## Training Results
@@ -78,17 +97,45 @@ The model structure visualized by tensorboard:
 
 ![](./images/model.png)
 
-The training loss:
+The curve of training loss:
 
 ![](./images/loss.png)
 
-The test results:
+## Test results
+
+### Performance On Test
 
 ```shell
 Loss (MSE) in test dataset: 0.016554169347
 MAE in test dataset:  0.0626648643461
 ```
 
-# ACKNOWLEDGEMENTS
+### Visualization
+
+#### Examples 1
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_1.jpg) | ![](./images/mask_1.jpg) | ![](./images/overlay_1.jpg) |
+
+#### Examples 2
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_2.jpg) | ![](./images/mask_2.jpg) | ![](./images/overlay_2.jpg) |
+
+#### Examples 3
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_3.jpg) | ![](./images/mask_3.jpg) | ![](./images/overlay_3.jpg) |
+
+#### Examples 4
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_4.jpg) | ![](./images/mask_4.jpg) | ![](./images/overlay_4.jpg) |
+
+# Acknoledgements
 
 Thanks to [Sully Chen](https://github.com/SullyChen) for the dataset.
