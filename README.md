@@ -78,17 +78,39 @@ The model structure visualized by tensorboard:
 
 ![](./images/model.png)
 
-The training loss:
+The curve of training loss:
 
 ![](./images/loss.png)
 
-The test results:
+## Test results
+
+### Performance On Test
 
 ```shell
 Loss (MSE) in test dataset: 0.016554169347
 MAE in test dataset:  0.0626648643461
 ```
 
-# ACKNOWLEDGEMENTS
+### Visualization
+
+#### Examples 1
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_1.jpg) | ![](./images/mask_1.jpg) | ![](./images/overlay_1.jpg) |
+
+#### Examples 2
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_2.jpg) | ![](./images/mask_2.jpg) | ![](./images/overlay_2.jpg) |
+
+#### Examples 3
+
+|      Original image       |           Mask           |           Overlay           |
+| :-----------------------: | :----------------------: | :-------------------------: |
+| ![](./images/image_3.jpg) | ![](./images/mask_3.jpg) | ![](./images/overlay_3.jpg) |
+
+# Acknoledgements
 
 Thanks to [Sully Chen](https://github.com/SullyChen) for the dataset.
